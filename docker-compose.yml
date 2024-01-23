@@ -13,8 +13,35 @@ services:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio123
     command: server /data --console-address ":9001"
+    networks:
+      iceberg:
+
 
   jupyter:
     image: jupyter/pyspark-notebook
     ports:
       - "8888:8888"
+
+    networks:
+      iceberg:
+
+    environment:
+      - https_proxy=http://proxy-iaa.ar.sa.vwg:8080
+
+    # Nessie Catalog Server Using In-Memory Store
+  nessie:
+    image: projectnessie/nessie:0.76.3
+    container_name: nessie
+    networks:
+      iceberg:
+    ports:
+      - 19120:19120
+
+    environment:
+      - http.nonProxyHosts="10.0.0.0/8"
+      - nonProxyHosts="10.0.0.0/8"
+      - no_proxy="10.0.0.0/8"
+      - NO_PROXY="10.0.0.0/8"
+
+networks:
+  iceberg:
