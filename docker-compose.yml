@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3'
 
 services:
   minio:
@@ -25,8 +25,7 @@ services:
     networks:
       iceberg:
 
-    environment:
-      - https_proxy=http://proxy-iaa.ar.sa.vwg:8080
+
 
     # Nessie Catalog Server Using In-Memory Store
   nessie:
@@ -42,6 +41,38 @@ services:
       - nonProxyHosts="10.0.0.0/8"
       - no_proxy="10.0.0.0/8"
       - NO_PROXY="10.0.0.0/8"
+
+
+
+  spark-master:
+    image: apache/spark
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+    ports:
+      - "9090:8080"
+      - "7077:7077"
+    networks:
+      - iceberg      
+
+  spark-worker:
+    image: apache/spark
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    volumes:
+      - ./spark:/opt/spark/work
+    ports:
+      - "7000:7000"
+      - "9091:8080"
+    depends_on:
+      - spark-master
+    networks:
+      - iceberg
+  
+  ubuntu:
+    image:  ubuntu
+    command: tail -f /dev/null
+    networks:
+      - iceberg
+
+   
 
 networks:
   iceberg:
