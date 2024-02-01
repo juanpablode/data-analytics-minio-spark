@@ -112,6 +112,9 @@ RUN chown $UID:$GID /home/sam/app
 RUN mkdir /home/sam/app/spark_events
 RUN chown $UID:$GID /home/sam/app/spark_events
 
+RUN mkdir /opt/spark 
+RUN mkdir /opt/spark/work 
+RUN chown $UID:$GID /opt/spark/work
 
 ###########################################
 # add sudo

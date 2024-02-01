@@ -27,11 +27,11 @@ services:
 
     environment:
       - http.nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
-      - http.nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
       - nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
       - no_proxy="10.0.0.0/8,192.0.0.0/8"
       - NO_PROXY="10.0.0.0/8,192.0.0.0/8"
-
+    volumes:
+      - ./spark:/opt/spark/work
 
 
 
@@ -67,7 +67,8 @@ services:
       - nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
       - no_proxy="10.0.0.0/8,192.0.0.0/8"
       - NO_PROXY="10.0.0.0/8,192.0.0.0/8"
-
+    volumes:
+      - ./spark:/opt/spark/work
 
 
 
