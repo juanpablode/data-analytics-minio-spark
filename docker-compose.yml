@@ -18,12 +18,20 @@ services:
 
 
   jupyter:
-    image: jupyter/pyspark-notebook
+    image: jupyter-notebook-arq
     ports:
       - "8888:8888"
 
     networks:
       iceberg:
+
+    environment:
+      - http.nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
+      - http.nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
+      - nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
+      - no_proxy="10.0.0.0/8,192.0.0.0/8"
+      - NO_PROXY="10.0.0.0/8,192.0.0.0/8"
+
 
 
 
@@ -37,25 +45,36 @@ services:
       - 19120:19120
 
     environment:
-      - http.nonProxyHosts="10.0.0.0/8"
-      - nonProxyHosts="10.0.0.0/8"
-      - no_proxy="10.0.0.0/8"
-      - NO_PROXY="10.0.0.0/8"
+      - http.nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
+      - nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
+      - no_proxy="10.0.0.0/8,192.0.0.0/8"
+      - NO_PROXY="10.0.0.0/8,192.0.0.0/8"
 
 
 
   spark-master:
     image: apache/spark
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+    container_name: master
     ports:
       - "9090:8080"
       - "7077:7077"
     networks:
       - iceberg      
 
+    environment:
+      - http.nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
+      - nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
+      - no_proxy="10.0.0.0/8,192.0.0.0/8"
+      - NO_PROXY="10.0.0.0/8,192.0.0.0/8"
+
+
+
+
   spark-worker:
     image: apache/spark
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    container_name: worker
     volumes:
       - ./spark:/opt/spark/work
     ports:
@@ -65,12 +84,15 @@ services:
       - spark-master
     networks:
       - iceberg
-  
-  ubuntu:
-    image:  ubuntu
-    command: tail -f /dev/null
-    networks:
-      - iceberg
+
+    environment:
+      - http.nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
+      - nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
+      - no_proxy="10.0.0.0/8,192.0.0.0/8"
+      - NO_PROXY="10.0.0.0/8,192.0.0.0/8"
+
+
+
 
    
 
