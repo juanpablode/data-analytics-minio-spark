@@ -4,3 +4,5 @@ analytics_test.ipynb:Zone.Identifier
 country_data.csv
 country_data.csv:Zone.Identifier
 country_analysis.ipynb:Zone.Identifier
+spark-3.5.0-bin-hadoop3.tgz
+spark
