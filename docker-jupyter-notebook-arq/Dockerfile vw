@@ -39,6 +39,8 @@ RUN pip install --no-cache-dir findspark
 
 RUN pip install --no-cache-dir pyspark
 
+RUN pip install --no-cache-dir s3fs
+
 
 #############################################
 # install java and spark and hadoop

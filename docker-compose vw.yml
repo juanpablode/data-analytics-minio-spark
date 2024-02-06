@@ -25,7 +25,11 @@ services:
     networks:
       iceberg:
 
-
+    environment:
+      - http.nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
+      - nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
+      - no_proxy="10.0.0.0/8,192.0.0.0/8"
+      - NO_PROXY="10.0.0.0/8,192.0.0.0/8"
     volumes:
       - ./spark:/opt/spark/work
 
@@ -40,10 +44,16 @@ services:
     ports:
       - 19120:19120
 
+    environment:
+      - http.nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
+      - nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
+      - no_proxy="10.0.0.0/8,192.0.0.0/8"
+      - NO_PROXY="10.0.0.0/8,192.0.0.0/8"
+
 
 
   spark-master:
-    image: spark-arq
+    image: apache/spark
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
     container_name: master
     ports:
@@ -52,7 +62,11 @@ services:
     networks:
       - iceberg      
 
-
+    environment:
+      - http.nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
+      - nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
+      - no_proxy="10.0.0.0/8,192.0.0.0/8"
+      - NO_PROXY="10.0.0.0/8,192.0.0.0/8"
     volumes:
       - ./spark:/opt/spark/work
 
@@ -72,6 +86,11 @@ services:
     networks:
       - iceberg
 
+    environment:
+      - http.nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
+      - nonProxyHosts="10.0.0.0/8,192.0.0.0/8"
+      - no_proxy="10.0.0.0/8,192.0.0.0/8"
+      - NO_PROXY="10.0.0.0/8,192.0.0.0/8"
 
 
 
