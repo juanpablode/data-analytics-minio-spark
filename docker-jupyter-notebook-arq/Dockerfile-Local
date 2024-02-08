@@ -1,7 +1,6 @@
 FROM python:3.8-bullseye
 
-ENV http_proxy=http://proxy-iaa.ar.sa.vwg:8080
-ENV https_proxy=http://proxy-iaa.ar.sa.vwg:8080
+
 ENV no_proxy=192.168.0.0/16,127.0.0.1,localhost,10.0.0.0/8,*.vwg
 
 ###########################################
@@ -57,8 +56,7 @@ RUN apt-get update --yes && \
     apt-get install --yes --no-install-recommends \
     "openjdk-${JAVA_VERSION}-jre-headless" \
     ca-certificates-java  \
-    curl && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    curl && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # What is --jre-headless?
 # Minimal Java runtime - needed for executing non GUI Java programs

@@ -1,0 +1,84 @@
+version: '3'
+
+services:
+  minio:
+    image: minio/minio
+    container_name: minio1
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - /mnt/data:/data
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    command: server /data --console-address ":9001"
+    networks:
+      iceberg:
+
+
+  jupyter:
+    image: jupyter-notebook-arq
+    ports:
+      - "8888:8888"
+
+    networks:
+      iceberg:
+
+
+    volumes:
+      - ./spark:/opt/spark/work
+
+
+
+    # Nessie Catalog Server Using In-Memory Store
+  nessie:
+    image: projectnessie/nessie:0.76.3
+    container_name: nessie
+    networks:
+      iceberg:
+    ports:
+      - 19120:19120
+
+
+
+  spark-master:
+    image: spark-arq
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+    container_name: master
+    ports:
+      - "9090:8080"
+      - "7077:7077"
+      - "4040:4040"
+      - "4041:4041"
+    networks:
+      - iceberg      
+
+
+    volumes:
+      - ./spark:/opt/spark/work
+
+
+
+  spark-worker:
+    image: apache/spark
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    container_name: worker
+    volumes:
+      - ./spark:/opt/spark/work
+    ports:
+      - "7000:7000"
+      - "9091:8080"
+    depends_on:
+      - spark-master
+    networks:
+      - iceberg
+
+
+
+
+
+   
+
+networks:
+  iceberg:

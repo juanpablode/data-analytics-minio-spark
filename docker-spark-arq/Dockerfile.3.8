@@ -12,6 +12,13 @@ RUN pip install --no-cache-dir pipenv
 RUN pip install --no-cache-dir jupyter
 RUN pip install --no-cache-dir py4j
 RUN pip install --no-cache-dir findspark
+RUN pip install --no-cache-dir pandas
+RUN pip install --no-cache-dir pyarrow
+RUN pip install --no-cache-dir grpcio
+RUN pip install --no-cache-dir google-api-python-client
+RUN pip install --no-cache-dir grpcio-status
+
+
 
 #############################################
 # install java and spark and hadoop
@@ -68,7 +75,7 @@ SPARK_WORKER_PORT=7000 \
 SPARK_MASTER="spark://spark-master:7077" \
 SPARK_WORKLOAD="master"
 
-EXPOSE 8080 7077 7000
+EXPOSE 8080 7077 7000 4040 4041
 
 RUN mkdir -p $SPARK_LOG_DIR && \
 touch $SPARK_MASTER_LOG && \

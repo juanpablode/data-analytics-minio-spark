@@ -1,0 +1,121 @@
+version: '3'
+
+services:
+  minio:
+    image: minio/minio
+    container_name: minio1
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - /mnt/data:/data
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    command: server /data --console-address ":9001"
+    networks:
+      iceberg:
+
+
+  jupyter:
+    image: jupyter-notebook-arq-v2
+    ports:
+      - "8888:8888"
+
+    networks:
+      iceberg:
+
+    environment:
+      - http.nonProxyHosts="10.0.0.0/8,192.0.0.0/8",master,spark-master,172.0.0.0/8"
+      - nonProxyHosts="10.0.0.0/8,192.0.0.0/8",master,spark-master,172.0.0.0/8"
+      - no_proxy="10.0.0.0/8,192.0.0.0/8",master,spark-master,172.0.0.0/8"
+      - NO_PROXY="10.0.0.0/8,192.0.0.0/8",master,spark-master,172.0.0.0/8"
+    volumes:
+      - ./spark:/opt/spark/work
+
+
+
+    # Nessie Catalog Server Using In-Memory Store
+  nessie:
+    image: projectnessie/nessie:0.76.3
+    container_name: nessie
+    networks:
+      iceberg:
+    ports:
+      - 19120:19120
+
+    environment:
+      - http.nonProxyHosts="10.0.0.0/8,192.0.0.0/8",master,spark-master,172.0.0.0/8"
+      - nonProxyHosts="10.0.0.0/8,192.0.0.0/8",master,spark-master,172.0.0.0/8"
+      - no_proxy="10.0.0.0/8,192.0.0.0/8",master,spark-master,172.0.0.0/8"
+      - NO_PROXY="10.0.0.0/8,192.0.0.0/8",master,spark-master,172.0.0.0/8"
+
+
+
+  spark-master:
+    image: apache/spark
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+    container_name: master
+    ports:
+      - "9090:8080"
+      - "7077:7077"
+    networks:
+      - iceberg      
+
+    environment:
+      - http.nonProxyHosts="10.0.0.0/8,192.0.0.0/8",master,spark-master,172.0.0.0/8"
+      - nonProxyHosts="10.0.0.0/8,192.0.0.0/8",master,spark-master,172.0.0.0/8"
+      - no_proxy="10.0.0.0/8,192.0.0.0/8",master,spark-master,172.0.0.0/8"
+      - NO_PROXY="10.0.0.0/8,192.0.0.0/8",master,spark-master,172.0.0.0/8"
+      - SPARK_LOCAL_IP=spark-master
+      - SPARK_WORKLOAD=master
+
+    volumes:
+      - ./spark:/opt/spark/work
+      - ./apps:/opt/spark-apps
+      - ./data:/opt/spark-data
+
+
+
+
+
+  spark-worker-a:
+    image: apache/spark
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    container_name: spark-worker-a
+    volumes:
+      - ./spark:/opt/spark/work
+      - ./apps:/opt/spark-apps
+      - ./data:/opt/spark-data
+    ports:
+      - "7000:7000"
+      - "9091:8080"
+    depends_on:
+      - spark-master
+    networks:
+      - iceberg
+
+    environment:
+      - http.nonProxyHosts="10.0.0.0/8,192.0.0.0/8",master,spark-master,172.0.0.0/8"
+      - nonProxyHosts="10.0.0.0/8,192.0.0.0/8",master,spark-master,172.0.0.0/8"
+      - no_proxy="10.0.0.0/8,192.0.0.0/8",master,spark-master,172.0.0.0/8"
+      - NO_PROXY="10.0.0.0/8,192.0.0.0/8",master,spark-master,172.0.0.0/8"
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_WORKER_CORES=4
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_DRIVER_MEMORY=1G
+      - SPARK_EXECUTOR_MEMORY=1G
+      - SPARK_WORKLOAD=worker
+      - SPARK_LOCAL_IP=spark-worker-a
+    
+ 
+
+
+
+
+
+
+
+
+networks:
+  iceberg:
