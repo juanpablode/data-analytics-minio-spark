@@ -9,7 +9,6 @@ ENV PIPENV_VENV_IN_PROJECT=1
 
 RUN python -m pip install --upgrade pip
 RUN pip install --no-cache-dir pipenv
-RUN pip install --no-cache-dir jupyter
 RUN pip install --no-cache-dir py4j
 RUN pip install --no-cache-dir findspark
 RUN pip install --no-cache-dir pandas
@@ -17,7 +16,8 @@ RUN pip install --no-cache-dir pyarrow
 RUN pip install --no-cache-dir grpcio
 RUN pip install --no-cache-dir google-api-python-client
 RUN pip install --no-cache-dir grpcio-status
-
+RUN pip install --no-cache-dir s3fs
+RUN pip install --no-cache-dir pyspark
 
 
 #############################################
@@ -40,6 +40,7 @@ RUN apt-get update --yes && \
     vim \
     wget \
     ssh \
+    rsync \
     net-tools \
     ca-certificates \
     curl && \
@@ -75,7 +76,7 @@ SPARK_WORKER_PORT=7000 \
 SPARK_MASTER="spark://spark-master:7077" \
 SPARK_WORKLOAD="master"
 
-EXPOSE 8080 7077 7000 4040 4041
+EXPOSE 8080 7077 7000 4040 4041 15002
 
 RUN mkdir -p $SPARK_LOG_DIR && \
 touch $SPARK_MASTER_LOG && \
@@ -92,4 +93,5 @@ RUN cd /opt/spark/bin && /opt/spark/bin/pyspark  --packages com.amazonaws:aws-ja
 
 COPY start-spark.sh /
 
-CMD ["/bin/bash", "/start-spark.sh"]
+
+CMD ["/bin/bash",  "/start-spark.sh"]
