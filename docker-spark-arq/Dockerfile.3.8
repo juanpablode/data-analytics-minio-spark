@@ -88,6 +88,7 @@ ln -sf /dev/stdout $SPARK_WORKER_LOG
 
 RUN cd /opt/spark/bin && /opt/spark/bin/pyspark  --packages org.apache.hadoop:hadoop-aws:3.3.4
 RUN cd /opt/spark/bin && /opt/spark/bin/pyspark  --packages com.amazonaws:aws-java-sdk-bundle:1.11.1026
+COPY spark-defaults.conf /opt/spark/conf/spark-defaults.conf
 
 
 
